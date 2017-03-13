@@ -1,0 +1,207 @@
+#!/bin/bash
+export TEXTDOMAIN=dd-iso
+export TEXTDOMAINDIR="/usr/share/locale"
+. gettext.sh
+
+script_name='DD-ISO'
+version=$(git rev-parse --short HEAD)
+by='Cristian Pozzessere <mail (at) gmail.com>'
+desc='Una semplice interfaccia grafica per dd.'
+
+
+
+###############
+### Globale ###
+###############
+
+
+shopt -s extglob globstar
+
+dd_output_file="/tmp/$script_name-$USER-$(date +%s).log"
+
+
+
+##################
+### Funzioni ###
+##################
+
+
+list_devices () {
+    local none_found=1
+    
+    for device in /dev/disk/by-path/*-usb-*; do
+        
+        [[ $device == *-part? ]] && continue
+        
+        readlink -f "$device"
+        none_found=0
+    done | sort 
+    return $none_found
+}
+
+
+# Argomenti:
+#   $1 - patch assoluta per 
+#
+list_partitions_of () {
+    local none_found=1
+  
+    for item in /dev/disk/by-label/*; do
+        .
+        local real_path=$(readlink -f "$item")
+        
+        [[ $real_path != @($1?|$1) ]] && continue
+        
+        local part_name=$(basename "$item")
+       
+        printf -- "%s\t${part_name:-$1}\n" "$real_path"
+        none_found=0
+    done | sort 
+    return $none_found
+}
+
+ask_for_usb_drive () {
+   
+    local columns=()
+    
+    while read -r device; do
+       
+        columns+=("$device" ' ')
+        while IFS=$'\t' read -r partition name; do
+            
+            columns+=(' ' "$partition - $name")
+        done < <(list_partitions_of "$device")
+    done < <(list_devices)
+    
+    if [[ -z $columns ]]; then
+        zenity --error \
+            --title "$(eval_gettext "\$script_name: Error")" \
+            --text "$(eval_gettext 'non risultano unità usb collegate.')"
+        exit 1
+    fi
+    # In caso contrario, chiedere all'utente di scegliere un dispositivo.
+    local device=$(zenity --list \
+				--title "$(eval_gettext "\$script_name: Step 1: Scegli una Destinazione")" \
+        --text "$(eval_gettext "Scegliil supporto usb dove scrivere l'immagine")" \
+        --print-column ALL \
+        --separator ' ' \
+        --column "$(eval_gettext "Device")" --column "$(eval_gettext "Partizioni esistenti")" \
+        "${columns[@]}")
+    
+    device=${device// /}
+   
+    [[ $device == *-* ]] && device=${device%?-*}
+   
+    [[ -z $device ]] && return 1
+    
+    echo "$device"; return 0
+}
+
+
+ask_for_iso_file () {
+    zenity --file-selection \
+        --title "$(eval_gettext "\$script_name: Step 2: Scegli il file iso ")" \
+        --file-filter '*.iso'
+}
+
+
+#   $1 - disc image file
+#   $2 - Path to USB device
+#
+ask_for_confirmation () {
+    zenity --question \
+        --title "$(eval_gettext "\$script_name: Step 3: Conferma Selezione")" \
+        --text "$(eval_gettext "Hai scelto di scrivere il file immagine disco")$1$(eval_gettext " to ")$2.$(eval_gettext " Questo sovrascriverà il contenuto del disco con l'immagine del disco.
+Sei sicuro di procedere?")"
+}
+
+for gui_su in beesu gtksudo gtksu kdesu; do
+    
+    gui_su=$(type -p $gui_su)
+   
+    [[ $gui_su ]] && break
+done
+
+if [[ -z $gui_su && $UID != 0 ]]; then
+    zenity --error \
+        --title "$(eval_gettext "\$script_name: Privilage Error")" \
+        --text "$(eval_gettext "Ho bisogno dei privilegi di amministratore per scrivere le immagini disco sulle periferiche USB, ma non riesco a trovare beesu, gtksudo, gtksu, o kdesu.")"
+    exit 1
+fi
+
+
+
+############
+### Main ###
+############
+
+# Lazily handle arguments passed to the script.
+case "$1" in
+    --write)
+        # Some of the GUIs to run something as root eat program output, so we
+        # will handle this as an argument and call the script as root with it
+        # later.
+        # And the user can conviniently use it themselves on the command line
+        # if they want to.  What a deal!
+
+        [[ $4 ]] && dd_output_file=$4
+
+        # Complain and exit if we're not already root.
+        if ((UID != 0)); then
+            echo "$(eval_gettext "\$script_name: this must be executed as root.")" | tee "$dd_output_file"
+            exit 1
+        fi
+
+        # Write the input file to a block device with dd and print an EOF when
+        # done.  dd output is redirected to the $dd_output_file.
+        dd if="$2" of="$3" bs=1M &> "$dd_output_file"
+        printf -- '\x04'
+        exit
+        ;;
+    -h|--help)
+      # Handle -h/--help flag and show info about the script.
+      echo "$script_name $version - $by"
+      echo "$(eval_gettext "Una semplice interfaccia GUI per scrivere  immagini iso su disco USB drive.")"
+      echo "$(eval_gettext "Esegui senza argomento per utilizzare l'interfaccia Zenity.")"
+      echo ""
+      echo "-h --help"
+      echo "$(eval_gettext    "This message.")"
+      echo ""
+      echo "--write DISC_IMAGE TARGET_DEVICE [LOG_FILE]"
+      echo "$(eval_gettext "Directly write DISC_IMAGE to TARGET_DEVICE with dd.  Requires root.")"
+      echo "$(eval_gettext "dd output will be written to LOG_FILE, otherwise to ")"$script_name-"$USER"-UNIX_TIMESTAMP
+      exit 1
+      ;;
+esac
+
+# Complain and exit if the user tries to use the GUI without X.
+if [[ -z $DISPLAY ]]; then
+    echo "$(eval_gettext "You must be run this script in an X session to use the Zenity GUI.")"
+    exit 1
+fi
+
+# Ask the user to choose a USB drive and an ISO file; exit if they bail out.
+device=$(ask_for_usb_drive)
+[[ -z $device ]] && exit 1
+
+file=$(ask_for_iso_file)
+[[ -z $file ]] && exit 1
+
+# Are they sure?
+ask_for_confirmation "$file" "$device" || exit 1
+
+# If so, run this script with the GUI su elevator and show a feedback about
+# the process.  We *could* poll dd to figure out an actual percentage, but
+# that would make things more complicated, so we'll settle for the pulserbar.
+( $gui_su "$0" --write "$file" "$device" "$dd_output_file") | zenity --progress \
+    --pulsate --auto-close \
+    --title "$(eval_gettext "\$script_name: Writing Image...")" \
+    --text "$(eval_gettext "The disc image is being written to ")${device}.$(eval_gettext " This will take a while.")"
+
+# Give the user the status report from dd.
+zenity --info \
+    --title "$(eval_gettext "\$script_name: Result")" \
+    --text "$(<"$dd_output_file")"
+
+# Clean up.
+rm "$dd_output_file"

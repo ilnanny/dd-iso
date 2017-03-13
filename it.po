@@ -1,0 +1,131 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: dd-iso\n"
+"POT-Creation-Date: 2017-01-03 14:17+0100\n"
+"PO-Revision-Date: 2017-01-03 14:17+0100\n"
+"Last-Translator: ilnanny <ilnannyhack@gmail.com>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: bg\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: dd-iso:90
+#, sh-format
+msgid "$script_name: Error"
+msgstr "$script_name: Errore"
+
+#: dd-iso:91
+msgid "There doesn't seem to be any USB drives connected to your computer."
+msgstr "Sembra non ci sia alcun drive USB connesso al tuo computer."
+
+#: dd-iso:96
+#, sh-format
+msgid "$script_name: Step 1: Choose a Target"
+msgstr "$script_name: Step 1: Scegli la destinazione"
+
+#: dd-iso:97
+msgid "Which USB drive would you like to write the image to?"
+msgstr "Su quale dispositivo vuoi scrivere la tua immagine?"
+
+#: dd-iso:100
+msgid "Device"
+msgstr "Dispositivi"
+
+#: dd-iso:100
+msgid "Existing Partitions"
+msgstr "Partizioni Esistenti"
+
+#: dd-iso:116
+#, sh-format
+msgid "$script_name: Step 2: Choose a Disk Image File"
+msgstr "$script_name: Step 2: Scegli il file immagine"
+
+#: dd-iso:127
+#, sh-format
+msgid "$script_name: Step 3: Confirm Selection"
+msgstr "$script_name: Step 3: Conferma la selezione"
+
+
+#: dd-iso:128
+#, sh-format
+msgid "You have chosen to write the disc image file "
+msgstr "Hai scelto di scrivere l'immagine nel drive "
+
+#: dd-iso:128
+#, sh-format
+msgid " to "
+msgstr " per "
+
+#: dd-iso:128
+#, sh-format
+msgid ""
+" This will overwrite the contents of the drive with the disc image.\n"
+"Do you wish to proceed?"
+msgstr " Questo procedimento sovrascriverà il contenuto della chiavetta con il file iso.\n"
+"Vuoi procedere?"
+
+#: dd-iso:150
+#, sh-format
+msgid "$script_name: Privilage Error"
+msgstr "$script_name: Privilage Error"
+
+#: dd-iso:151
+msgid ""
+"I need root privilages to write disc images to USB devices, but cannot find "
+"beesu, gtksudo, gtksu, or kdesu."
+msgstr "Ho bisogno dei permessi di amministratore per scrivere sul drive,ma non sono riuscito a trovare beesu, gtksudo, gtksu o kdesu"
+
+#: dd-iso:174
+#, sh-format
+msgid "$script_name: this must be executed as root."
+msgstr "$script_name: bisogna eseguirlo da root"
+
+#: dd-iso:187
+#, sh-format
+msgid "A simple GUI frontend to dd to write ISO disc images to USB drives."
+msgstr "Una semplice interfaccia per dd,per scrivere immagini avviabili sui supporti usb."
+
+#: dd-iso:188
+#, sh-format
+msgid "Run without arguments to use the Zenity GUI."
+msgstr "Usarlo senza argomenti per utilizzare l'interfaccia di Zenity"
+
+#: dd-iso:191
+#, sh-format
+msgid "This message."
+msgstr "Questo messaggio."
+
+#: dd-iso:194
+#, sh-format
+msgid "Directly write DISC_IMAGE to TARGET_DEVICE with dd.  Requires root."
+msgstr "Scrive direttamente DISC_IMAGE su TARGET_DEVICE сon dd. Richiede root."
+
+#: dd-iso:195
+#, sh-format
+msgid "dd output will be written to LOG_FILE, otherwise to "
+msgstr "L'output dd è stato salvato su LOG_FILE, altrimenti "
+
+#: dd-iso:202
+msgid "You must be run this script in an X session to use the Zenity GUI."
+msgstr "Bisogna aprire questo script in una sessione X per l'interfaccia Zenity."
+
+#: dd-iso:221
+#, sh-format
+msgid "$script_name: Writing Image..."
+msgstr "$script_name: Scrittura Dell'Immagine..."
+
+#: dd-iso:222
+#, sh-format
+msgid "The disc image is being written to "
+msgstr "Scrittura eseguita  "
+
+#: dd-iso:222
+#, sh-format
+msgid " This will take a while."
+msgstr " Ci vorrà un po'"
+
+#: dd-iso:226
+#, sh-format
+msgid "$script_name: Result"
+msgstr "$script_name: Risultato"

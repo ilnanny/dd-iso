@@ -1,0 +1,19 @@
+[Desktop Entry]
+Version=1.0
+Name=DD-ISO
+Comment=
+Categories=Application;System;
+Exec=/usr/bin/dd-iso
+Terminal=false
+Type=Application
+Name[en_US]=Dd-iso
+Name[bg]=Dd-iso
+Name[it]=Dd-iso
+GenericName[en_US]=Dd-iso
+GenericName[bg]=Dd-iso
+GenericName[bg]=Dd-iso
+Comment[en_US]=A simple GUI frontend to dd to write ISO disc images to USB drives.
+Comment[bg]=Прост GUI интерфейс за dd, който записва ISO дискови изображения на USB устройства.
+Comment[it_IT]=Interfaccia grafica per scrivere immagini disco con dd.
+Icon=dd-iso.svg
+GenericName=GUI frontend to dd
