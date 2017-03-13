@@ -12,6 +12,6 @@ Usage
 
 - Run without arguments to use the Zenity GUI.
 - Run from the terminal with `sudo dd-iso --write DISC_IMAGE TARGET_DEVICE [LOG_FILE]`.
-- `-h` for help.
+
 # dd-iso
 
